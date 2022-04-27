@@ -3,6 +3,8 @@ let allToyObjects = []
 
 document.addEventListener("DOMContentLoaded", () => {
   fetchToys()
+  clickLike()
+
   const addBtn = document.querySelector("#new-toy-btn");
   const toyFormContainer = document.querySelector(".container");
   addBtn.addEventListener("click", () => {
@@ -31,12 +33,34 @@ function renderToys(toysObject) {
   const toyCollection = document.querySelector("#toy-collection");
   
   toysObject.forEach(element => {
-    let createNewDiv = document.createElement("div")
-    let appendedDiv = toyCollection.appendChild(createNewDiv);
-    appendedDiv.className = "card"
-
+   
     let toy_image_url = element.image
-    appendedDiv.innerHTML = `<h2>${element.name}</h2><img src=${toy_image_url} class=toy-avatar/><p>${element.likes} Likes </p><button class=like-btn>Like <3</button>`
+
+    let h2 = document.createElement('h2')
+    h2.innerText = element.name 
+
+    let img = document.createElement('img')
+    img.setAttribute('src', element.image)
+    img.setAttribute('class', "toy-avatar")
+
+    let p = document.createElement('p')
+    p.innerText = `${element.likes} likes`
+
+    let btn = document.createElement('button')
+    btn.setAttribute('class', 'like-btn')
+    btn.setAttribute('id', element.id)
+    btn.innerText = "like"
+
+    btn.addEventListener("click", (e) => {
+      Likes(e)
+      console.log(e.target)
+    });
+
+    let divCard = document.createElement("div")
+    divCard.setAttribute('class', 'card')
+    divCard.append(h2, img, p, btn)
+    toyCollection.append(divCard)
+   
   });
 }
 
@@ -48,7 +72,7 @@ function createAndPostToys () {
     e.preventDefault()
     const formData =  {
       name: e.target.name.value,
-      image: e.target.image.value,
+      image: e.target.image.value
     }
     postToys(formData.name, formData.image)
   })
@@ -65,8 +89,8 @@ function postToys(name, image, likes=0) {
     },
     body: JSON.stringify({
       name,
-      image,
-      likes
+      image 
+      
     })
   })
   .then( function ( response ) {
@@ -79,6 +103,37 @@ function postToys(name, image, likes=0) {
   .catch( function ( error ) {
     document.body.innerHTML = error.message
   })
+}
+
+
+function Likes(e) {
+  e.preventDefault()
+
+  let currentLikes = parseInt(e.target.previousElementSibling.innerText)
+  let updatedLikes = currentLikes + 1 
+
+
+  return fetch(`http://localhost:3000/toys/${e.target.id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "applicaiton/json"
+    },
+    body: JSON.stringify({
+      "likes": updatedLikes 
+    })
+  })
+  .then( function ( response ) {
+    return response.json()
+  })
+  .then( function ( like_object ) {
+    console.log(like_object)  
+    e.target.previousElementSibling.innerText = `${updatedLikes} likes`;
+  })
+  .catch( function ( error ) {
+    document.body.innerHTML = error.message
+  })
+
 }
 
 
