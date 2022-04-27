@@ -2,9 +2,6 @@ let addToy = false;
 let allToyObjects = []
 
 document.addEventListener("DOMContentLoaded", () => {
-  fetchToys()
-  clickLike()
-
   const addBtn = document.querySelector("#new-toy-btn");
   const toyFormContainer = document.querySelector(".container");
   addBtn.addEventListener("click", () => {
@@ -136,4 +133,7 @@ function Likes(e) {
 
 }
 
+
+fetchToys()
+clickLike()
 
