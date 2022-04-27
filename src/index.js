@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     addToy = !addToy;
     if (addToy) {
       toyFormContainer.style.display = "block";
+      createAndPostToys ()
     } else {
       toyFormContainer.style.display = "none";
     }
@@ -34,8 +35,6 @@ function renderToys(toysObject) {
     let appendedDiv = toyCollection.appendChild(createNewDiv);
     appendedDiv.className = "card"
 
-    debugger
-
     let toy_image_url = element.image
     appendedDiv.innerHTML = `<h2>${element.name}</h2><img src=${toy_image_url} class=toy-avatar/><p>${element.likes} Likes </p><button class=like-btn>Like <3</button>`
   });
@@ -43,30 +42,43 @@ function renderToys(toysObject) {
 
 
 
+function createAndPostToys () {
+  const formBtn = document.querySelector('form');
+  formBtn.addEventListener("submit", (e) => {
+    e.preventDefault()
+    const formData =  {
+      name: e.target.name.value,
+      image: e.target.image.value,
+    }
+    postToys(formData.name, formData.image)
+  })
+}
 
 
-// function postToys() {
-//   return fetch("http://localhost:3000/toys", {
-//     method: "GET",
-//     headers: {
-//       "Content-Type": "application/json",
-//       "Accept": "applicaiton/json"
-//     },
-//     body: JSON.stringify({
-//       toyName,
-//       toyImageUrl
-//     })
-//   })
-//   .then( function ( response ) {
-//     return response.json()
-//   })
-//   .then( function ( object ) {
-//     console.log(object)  
-//     document.body.innerHTML = object[ "id" ]
-//   })
-//   .catch( function ( error ) {
-//     document.body.innerHTML = error.message
-//   })
-// }
+
+function postToys(name, image, likes=0) {
+  return fetch("http://localhost:3000/toys", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "applicaiton/json"
+    },
+    body: JSON.stringify({
+      name,
+      image,
+      likes
+    })
+  })
+  .then( function ( response ) {
+    return response.json()
+  })
+  .then( function ( object ) {
+    console.log(object)  
+    document.body.innerHTML = object[ "id" ]
+  })
+  .catch( function ( error ) {
+    document.body.innerHTML = error.message
+  })
+}
 
 
